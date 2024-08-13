@@ -8,6 +8,6 @@ export const pool = new pg.Pool({
     port: "5432"
 })
 
-pool.query('SELECT NOW()').then(result =>{
-    console.log(result.rows[0])
-})
+// pool.query('SELECT NOW()').then(result =>{
+//     console.log(result.rows[0])
+// })
