@@ -1,51 +1,16 @@
 import { Router } from "express";
-import { pool } from "../db.js";
+import { createUsers, deleteUsers, getUser, getUsers, updateUsers } from "../controllers/users.controllers.js";
 
 const router = Router();
 
-router.get('/users', async (req, res) =>{
-    const {rows} = await pool.query("SELECT * FROM users");
-    res.json(rows);
-});
+router.get('/users', getUsers);
 
-router.get('/users/:id', async (req, res) =>{
-    const {id} = req.params
-    const {rows} = await pool.query("SELECT * FROM users WHERE id = $1", [id] );
-    if (rows.length === 0){
-        return res.status(404).json({message: "Usuario no encontrado"});
-    }
-    
-    res.json(rows[0]);
-})
+router.get('/users/:id', getUser)
 
-router.post('/users', async (req, res) =>{
-    const data = req.body;
-    const {rows} = await pool.query(
-    "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
-    [data.name, data.email]
-    );
-    return res.json(rows[0]);
-});
+router.post('/users', createUsers);
 
-router.delete('/users/:id', async (req, res) =>{
-    const {id} = req.params
-    const {rowCount} = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id])
+router.delete('/users/:id', deleteUsers);
 
-    if(rowCount === 0){
-        return res.status(404).json({message: "Usuario no encontrado"});
-    }
-    return res.sendStatus(204)
-})
-
-router.put('/users/:id', async (req, res) =>{
-    const {id} = req.params;
-    const data = req.body;
-
-    const {rows} = await pool.query(
-        "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *",
-        [data.name, data.email, id]
-    );
-    return res.json(rows[0])
-})
+router.put('/users/:id', updateUsers)
 
 export default router;
